@@ -1,0 +1,61 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.datasets import fetch_california_housing
+
+# Load the dataset
+data = fetch_california_housing()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+df['MedHouseVal'] = data.target
+
+# Display the first few rows
+print(df.head())
+
+# Define features and target variable
+X = df[['AveRooms']]  # Using 'AveRooms' as the feature for simplicity
+y = df['MedHouseVal']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+print(f'Training data shape: {X_train.shape}')
+print(f'Testing data shape: {X_test.shape}')
+
+# Create a linear regression model
+model = LinearRegression()
+
+# Train the model on the training data
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Calculate performance metrics
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'Mean Squared Error: {mse}')
+print(f'R-squared: {r2}')
+
+# Plot the regression line
+plt.figure(figsize=(10, 6))
+plt.scatter(X_test, y_test, color='blue', label='Actual values')
+plt.plot(X_test, y_pred, color='red', linewidth=2, label='Regression line')
+plt.xlabel('Average Rooms per Dwelling')
+plt.ylabel('Median House Value')
+plt.title('Simple Linear Regression')
+plt.legend()
+plt.show()
+
+# Plot actual vs. predicted values
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test, y_pred, color='purple')
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('Actual vs Predicted Values')
+plt.show()
